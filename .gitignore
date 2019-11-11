@@ -149,4 +149,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# other
+.idea
+
 # End of https://www.gitignore.io/api/macos,python,jupyternotebooks
