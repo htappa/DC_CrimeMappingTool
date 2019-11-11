@@ -1,7 +1,3 @@
-import requests
-import json
-import pandas as pd
-import numpy as np
 import geopandas as gpd
 import folium
 from folium.plugins import MarkerCluster
@@ -16,15 +12,16 @@ df_crime = gpd.read_file(url_crime)
 # create new column for violent crimes and property crimes where:
 #   violent = ASSAULT W/DANGEROUS WEAPON, HOMICIDE, ROBBERY, SEX ABUSE
 #   property = MOTOR VEHICLE THEFT, THEFT F/AUTO, THEFT/OTHER, BURGLARY, ARSON
-# define function to map values
+
+# define function to map values for new column
 def set_value(row_number, assigned_value):
     return assigned_value[row_number]
-# create dictionary
+# create dictionary of offenses
 offense_dictionary = {'ASSAULT W/DANGEROUS WEAPON': 'violent', 'HOMICIDE': 'violent', 'ROBBERY': 'violent',
                       'SEX ABUSE': 'violent', 'THEFT/OTHER': 'property', 'THEFT F/AUTO': 'property',
                       'MOTOR VEHICLE THEFT': 'property', 'BURGLARY': 'property', 'ARSON': 'property'}
 # add new column to dataframe named 'OFFENSE_GROUP'
-df_crime['OFFENSE_GROUP'] = df_crime['OFFENSE'].apply(set_value, args =(offense_dictionary, ))
+df_crime['OFFENSE_GROUP'] = df_crime['OFFENSE'].apply(set_value, args=(offense_dictionary, ))
 
 # define function to filter time of day
 def time_of_day():
@@ -73,7 +70,7 @@ map = folium.Map(location=dc_coordinates, zoom_start=12)
 mc = MarkerCluster().add_to(map)
 # add latitude/longitude to markers
 for each in df_crime.iterrows():
-    folium.Marker([each[1]['LATITUDE'],each[1]['LONGITUDE']],
+    folium.Marker([each[1]['LATITUDE'], each[1]['LONGITUDE']],
                   # add offense and time (start date) to marker popups
                   popup=each[1]['OFFENSE'] + ", " + each[1]['START_DATE']).add_to(mc)
 # save map as html file
