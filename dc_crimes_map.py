@@ -1,4 +1,5 @@
 import geopandas as gpd
+import pandas as pd
 import folium
 from folium.plugins import MarkerCluster
 import webbrowser
@@ -8,6 +9,10 @@ import os
 print('Reading 2019 Crime Incidents data from from OpenDataDC...')
 url_crime = 'https://opendata.arcgis.com/datasets/f08294e5286141c293e9202fcd3e8b57_1.geojson'
 df_crime = gpd.read_file(url_crime)
+
+# change date format
+df_crime.START_DATE = pd.to_datetime(df_crime.START_DATE, format='%Y/%m/%d %H:%M:%S')
+df_crime.START_DATE = df_crime.START_DATE.apply(lambda x: x.strftime('%m/%d/%Y %H:%M'))
 
 # create new column for violent crimes and property crimes where:
 #   violent = ASSAULT W/DANGEROUS WEAPON, HOMICIDE, ROBBERY, SEX ABUSE
