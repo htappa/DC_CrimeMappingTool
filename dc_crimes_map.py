@@ -82,20 +82,20 @@ for each in df_crime.iterrows():
 map.save('map_clustered.html')
 
 # change path to reflect file location and format for webbrowser
-filename = 'file:///'+os.getcwd()+'/' + 'map_clustered.html'
+filename = 'file:///' + os.getcwd() + '/' + 'map_clustered.html'
 
 # -----------------------------------------------------------------------------------------
 # To open the map in a new tab in Google Chrome, use the code below for your respective OS:
 
 # Windows
-# chrome_cmd = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe %s"
+# cmd = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe %s"
 
 # Mac
-chrome_cmd = "open -a /Applications/Google\ Chrome.app %s"
+cmd = "open -a /Applications/Google\ Chrome.app %s"
 
 # Linux
-# chrome_cmd = "/usr/bin/google-chrome %s"
+# cmd = "/usr/bin/google-chrome %s"
 # -----------------------------------------------------------------------------------------
 
 # open map in new browser tab
-webbrowser.get(chrome_cmd).open_new_tab(filename)
+webbrowser.get(cmd).open_new_tab(filename)
