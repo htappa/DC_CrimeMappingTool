@@ -100,14 +100,10 @@ filename = 'file:///' + os.getcwd() + '/' + 'map_clustered.html'
 # To open the map in a new tab in Google Chrome, use the code below for your respective OS:
 
 # Windows
-# cmd = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe %s"
+# webbrowser.open_new_tab(filename)
 
 # Mac
-cmd = "open -a /Applications/Google\ Chrome.app %s"
-
-# Linux
-# cmd = "/usr/bin/google-chrome %s"
-# -----------------------------------------------------------------------------------------
-
-# open map in new browser tab
+cmd = 'open -a /Applications/Google\ Chrome.app %s'
 webbrowser.get(cmd).open_new_tab(filename)
+
+# -----------------------------------------------------------------------------------------
