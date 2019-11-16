@@ -1,5 +1,6 @@
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 import folium
 from folium.plugins import MarkerCluster
 import webbrowser
@@ -12,7 +13,12 @@ df_crime = gpd.read_file(url_crime)
 
 # change date format
 df_crime.START_DATE = pd.to_datetime(df_crime.START_DATE, format='%Y/%m/%d %H:%M:%S')
-df_crime.START_DATE = df_crime.START_DATE.apply(lambda x: x.strftime('%m/%d/%Y %H:%M'))
+
+# create time of day column
+hours = df_crime['START_DATE'].dt.hour
+bins = [-1, 4, 9, 17, 21]
+labels = ['night', 'morning', 'afternoon', 'evening', 'night']
+df_crime['time_of_day'] = np.array(labels)[np.array(bins).searchsorted(hours)-1]
 
 # create new column for violent crimes and property crimes where:
 #   violent = ASSAULT W/DANGEROUS WEAPON, HOMICIDE, ROBBERY, SEX ABUSE
@@ -25,27 +31,31 @@ def set_value(row_number, assigned_value):
 offense_dictionary = {'ASSAULT W/DANGEROUS WEAPON': 'violent', 'HOMICIDE': 'violent', 'ROBBERY': 'violent',
                       'SEX ABUSE': 'violent', 'THEFT/OTHER': 'property', 'THEFT F/AUTO': 'property',
                       'MOTOR VEHICLE THEFT': 'property', 'BURGLARY': 'property', 'ARSON': 'property'}
-# add new column to dataframe named 'OFFENSE_GROUP'
+# add new column to dataframe for offense grouping
 df_crime['OFFENSE_GROUP'] = df_crime['OFFENSE'].apply(set_value, args=(offense_dictionary, ))
 
 # define function to filter time of day
 def time_of_day():
-    time = input("Enter time of day (day, evening, midnight): ")
+    time = input("Enter time of day (morning, afternoon, evening, night): ")
     time = str(time)
-    d = df_crime['SHIFT'] == 'DAY'
-    e = df_crime['SHIFT'] == 'EVENING'
-    m = df_crime['SHIFT'] == 'MIDNIGHT'
-    crime_d = df_crime[d]
-    crime_e = df_crime[e]
+    m = df_crime['time_of_day'] == 'morning'
+    a = df_crime['time_of_day'] == 'afternoon'
+    e = df_crime['time_of_day'] == 'evening'
+    n = df_crime['time_of_day'] == 'night'
     crime_m = df_crime[m]
-    if time == 'day':
-        return crime_d
+    crime_a = df_crime[a]
+    crime_e = df_crime[e]
+    crime_n = df_crime[n]
+    if time == 'morning':
+        return crime_m
+    elif time == 'afternoon':
+        return crime_a
     elif time == 'evening':
         return crime_e
-    elif time == 'midnight':
-        return crime_m
+    elif time == 'night':
+        return crime_n
     else:
-        print('ERROR: Input must be either "day", "evening", or "midnight"')
+        print('ERROR: Input must be either "morning", "afternoon", "evening", "night" (case sensitive)')
         return
 df_crime = time_of_day()
 
@@ -62,7 +72,7 @@ def type_of_offense():
     elif offense == 'property':
         return crime_p
     else:
-        print('ERROR: Input must be either "violent" or "property"')
+        print('ERROR: Input must be either "violent" or "property" (case sensitive)')
         return
 df_crime = type_of_offense()
 
@@ -73,6 +83,8 @@ dc_coordinates = (38.9072, -77.0369)
 map = folium.Map(location=dc_coordinates, zoom_start=12)
 # add marker clusters to map
 mc = MarkerCluster().add_to(map)
+# change data type of date column to string
+df_crime.START_DATE = df_crime.START_DATE.apply(lambda x: x.strftime('%m/%d/%Y %H:%M'))
 # add latitude/longitude to markers
 for each in df_crime.iterrows():
     folium.Marker([each[1]['LATITUDE'], each[1]['LONGITUDE']],
