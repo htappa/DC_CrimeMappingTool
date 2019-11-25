@@ -7,7 +7,7 @@ import webbrowser
 import os
 
 # build dataframe from api
-print('Reading 2019 Crime Incidents data from from OpenDataDC...')
+print('Reading 2019 Crime Incidents data from OpenDataDC...')
 url_crime = 'https://opendata.arcgis.com/datasets/f08294e5286141c293e9202fcd3e8b57_1.geojson'
 df_crime = gpd.read_file(url_crime)
 
@@ -29,8 +29,9 @@ def set_value(row_number, assigned_value):
     return assigned_value[row_number]
 # create dictionary of offenses
 offense_dictionary = {'ASSAULT W/DANGEROUS WEAPON': 'violent', 'HOMICIDE': 'violent', 'ROBBERY': 'violent',
-                      'SEX ABUSE': 'violent', 'THEFT/OTHER': 'property', 'THEFT F/AUTO': 'property',
-                      'MOTOR VEHICLE THEFT': 'property', 'BURGLARY': 'property', 'ARSON': 'property'}
+                      'SEX ABUSE': 'violent', 'THEFT/OTHER': 'property: other', 'THEFT F/AUTO': 'property: vehicle',
+                      'MOTOR VEHICLE THEFT': 'property: vehicle', 'BURGLARY': 'property: home',
+                      'ARSON': 'property: home'}
 # add new column to dataframe for offense grouping
 df_crime['OFFENSE_GROUP'] = df_crime['OFFENSE'].apply(set_value, args=(offense_dictionary, ))
 
@@ -61,18 +62,24 @@ df_crime = time_of_day()
 
 # define function to filter offense type
 def type_of_offense():
-    offense = input("Enter offense type (violent, property): ")
+    offense = input("Enter offense type (all, violent, property: home, property: vehicle): ")
     offense = str(offense)
     v = df_crime['OFFENSE_GROUP'] == 'violent'
-    p = df_crime['OFFENSE_GROUP'] == 'property'
+    ph = df_crime['OFFENSE_GROUP'] == 'property: home'
+    pv = df_crime['OFFENSE_GROUP'] == 'property: vehicle'
     crime_v = df_crime[v]
-    crime_p = df_crime[p]
+    crime_ph = df_crime[ph]
+    crime_pv = df_crime[pv]
     if offense == 'violent':
         return crime_v
-    elif offense == 'property':
-        return crime_p
+    elif offense == 'property: home':
+        return crime_ph
+    elif offense == 'property: vehicle':
+        return crime_pv
+    elif offense == 'all':
+        return df_crime
     else:
-        print('ERROR: Input must be either "violent" or "property" (case sensitive)')
+        print('ERROR: Input must be either "all", "violent", "property: home", or "property: vehicle" (case sensitive)')
         return
 df_crime = type_of_offense()
 
@@ -97,7 +104,7 @@ map.save('map_clustered.html')
 filename = 'file:///' + os.getcwd() + '/' + 'map_clustered.html'
 
 # -----------------------------------------------------------------------------------------
-# To open the map in a new tab in Google Chrome, use the code below for your respective OS:
+# to open the map in a new tab in Google Chrome, use the code below for your respective OS:
 
 # Windows
 # webbrowser.open_new_tab(filename)
