@@ -22,7 +22,9 @@ df_crime['time_of_day'] = np.array(labels)[np.array(bins).searchsorted(hours)-1]
 
 # create new column for violent crimes and property crimes where:
 #   violent = ASSAULT W/DANGEROUS WEAPON, HOMICIDE, ROBBERY, SEX ABUSE
-#   property = MOTOR VEHICLE THEFT, THEFT F/AUTO, THEFT/OTHER, BURGLARY, ARSON
+#   property: other = THEFT/OTHER
+#   property: vehicle = MOTOR VEHICLE THEFT, THEFT F/AUTO
+#   property: home = BURGLARY, ARSON
 
 # define function to map values for new column
 def set_value(row_number, assigned_value):
