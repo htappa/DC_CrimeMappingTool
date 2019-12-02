@@ -10,7 +10,7 @@ Python 3.7.4
 Pandas 0.23.4  
 Numpy v1.17.4  
 GeoPandas 0.6.0  
-Matplotlib 1.5.1 
+Matplotlib 1.5.1  
 Seaborn 0.9.0  
 Webbrowser  
 
