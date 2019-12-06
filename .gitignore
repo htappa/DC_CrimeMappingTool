@@ -151,5 +151,6 @@ dmypy.json
 
 # other
 .idea
+.vscode
 
 # End of https://www.gitignore.io/api/macos,python,jupyternotebooks
